@@ -113,3 +113,6 @@ Ganti setiap `bat '...'` menjadi `sh '...'` dan `%VAR%` menjadi `$VAR`, misalnya
 `sh 'echo $DH_TOKEN | docker login -u $DH_USER --password-stdin'`.
 Kalau Jenkins sendiri berjalan di dalam container, `localhost` di stage
 Verifikasi merujuk ke container Jenkins, bukan ke host.
+
+
+test: verify Jenkins SCM webhook
