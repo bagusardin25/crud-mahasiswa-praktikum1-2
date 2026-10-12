@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="toolbar">
+    <div>
+      <h1>Data Mahasiswa</h1>
+      <p class="sub">{{ total }} mahasiswa terdaftar di database.</p>
+    </div>
+    <a class="btn" href="{{ url_for('tambah') }}">+ Tambah Mahasiswa</a>
+  </div>
+
+  <form class="search" method="get" action="{{ url_for('index') }}">
+    <input type="search" name="q" value="{{ q }}" placeholder="Cari nama atau NIM…">
+    <button class="btn ghost" type="submit">Cari</button>
+    {% if q %}<a class="btn ghost" href="{{ url_for('index') }}">Reset</a>{% endif %}
+  </form>
+
+  {% if mahasiswa %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>NIM</th>
+          <th>Nama</th>
+          <th>Program Studi</th>
+          <th>Angkatan</th>
+          <th>Email</th>
+          <th class="aksi">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in mahasiswa %}
+        <tr>
+          <td class="mono">{{ m.nim }}</td>
+          <td>{{ m.nama }}</td>
+          <td>{{ m.prodi }}</td>
+          <td>{{ m.angkatan }}</td>
+          <td>{{ m.email or '—' }}</td>
+          <td class="aksi">
+            <a class="btn ghost small" href="{{ url_for('edit', mhs_id=m.id) }}">Edit</a>
+            <form method="post" action="{{ url_for('hapus', mhs_id=m.id) }}"
+                  data-nama="{{ m.nama }}"
+                  onsubmit="return confirm('Hapus data ' + this.dataset.nama + '?');">
+              <button class="btn danger small" type="submit">Hapus</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="empty">
+      {% if q %}Tidak ada mahasiswa yang cocok dengan “{{ q }}”.
+      {% else %}Belum ada data. Klik “Tambah Mahasiswa” untuk mulai.{% endif %}
+    </p>
+  {% endif %}
+</div>
+
+<style>
+  .toolbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 0 12px; flex-wrap: wrap; }
+  .toolbar .btn { margin-bottom: 14px; }
+  .search { display: flex; gap: 8px; margin-bottom: 16px; }
+  .search input { flex: 1; min-width: 0; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; }
+  .mono { font-family: ui-monospace, Consolas, monospace; }
+  .aksi { text-align: right; }
+  td.aksi form { display: inline; }
+  .empty { color: var(--muted); text-align: center; padding: 28px 0; }
+</style>
+{% endblock %}

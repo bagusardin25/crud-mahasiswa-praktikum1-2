@@ -1,0 +1,44 @@
+# Nama project dipatok supaya setiap build Jenkins mengganti container yang sama,
+# tidak peduli di folder workspace mana pipeline dijalankan.
+name: crud-mahasiswa
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mahasiswa_db}
+      POSTGRES_USER: ${DB_USER:-mahasiswa}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mahasiswa123}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Port database sengaja TIDAK dibuka ke host. App menjangkaunya lewat
+    # jaringan internal compose dengan hostname "db".
+
+  app:
+    # Di Jenkins, IMAGE_TAG = nomor build, jadi yang jalan adalah image hasil build itu.
+    # Saat dijalankan manual, IMAGE_TAG kosong dan image di-build dengan tag "latest".
+    image: crud-mahasiswa:${IMAGE_TAG:-latest}
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-mahasiswa_db}
+      DB_USER: ${DB_USER:-mahasiswa}
+      DB_PASSWORD: ${DB_PASSWORD:-mahasiswa123}
+      SECRET_KEY: ${SECRET_KEY:-ganti-secret-key-ini}
+      APP_VERSION: ${IMAGE_TAG:-dev}
+    ports:
+      - "${APP_PORT:-5000}:5000"
+
+volumes:
+  pgdata:

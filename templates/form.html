@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ judul }} · CRUD Mahasiswa{% endblock %}
+{% block content %}
+<div class="card form-card">
+  <h1>{{ judul }}</h1>
+  <p class="sub">Kolom bertanda * wajib diisi.</p>
+
+  <form method="post" action="{{ action }}">
+    <label for="nim">NIM *</label>
+    <input id="nim" name="nim" value="{{ mhs.get('nim', '') }}" inputmode="numeric"
+           pattern="[0-9]{5,20}" maxlength="20" required>
+
+    <label for="nama">Nama Lengkap *</label>
+    <input id="nama" name="nama" value="{{ mhs.get('nama', '') }}" maxlength="100" required>
+
+    <label for="prodi">Program Studi *</label>
+    <input id="prodi" name="prodi" value="{{ mhs.get('prodi', '') }}" list="daftar-prodi"
+           maxlength="100" required>
+    <datalist id="daftar-prodi">
+      <option value="Sistem Informasi">
+      <option value="Informatika">
+      <option value="Teknologi Informasi">
+      <option value="Rekayasa Perangkat Lunak">
+      <option value="Teknik Telekomunikasi">
+      <option value="Teknik Industri">
+    </datalist>
+
+    <label for="angkatan">Angkatan *</label>
+    <input id="angkatan" name="angkatan" type="number" min="1990" max="2100"
+           value="{{ mhs.get('angkatan', '') }}" required>
+
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" value="{{ mhs.get('email') or '' }}" maxlength="120">
+
+    <div class="actions">
+      <a class="btn ghost" href="{{ url_for('index') }}">Batal</a>
+      <button class="btn" type="submit">Simpan</button>
+    </div>
+  </form>
+</div>
+
+<style>
+  .form-card { max-width: 520px; }
+  label { display: block; font-weight: 600; font-size: .88rem; margin: 14px 0 6px; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
+</style>
+{% endblock %}
